@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import load_and_clean_data as lcd
 import utilityfunctions as util
 
-image_features_dir = r'C:\Users\sumabh\OneDrive\MLDS\UW-MSDS\DATA558\GitHub\kaggle\data_features'
+image_features_dir = r'https://s3.amazonaws.com/data558filessuman/DataCompetitionfiles/data'
 
 train_features, train_labels, test_features, test_labels, labelnames = lcd.loadandextractcleandata(image_features_dir, standardize=1)
 

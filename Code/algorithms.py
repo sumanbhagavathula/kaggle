@@ -5,6 +5,8 @@ import copy
 from scipy import linalg
 from scipy import stats
 
+import utilityfunctions as util
+
 from multiprocessing.dummy import Pool as ThreadPool
 
 def graddescent(computeobj, computegrad, betas, x, y, eta, max_iter=1000):
@@ -53,7 +55,7 @@ def fastgradientdescent(computeobj, computegrad, beta_init, x, y, lambduh, max_i
         newscore = computeobj(theta, x, y, lambduh)
         # print(newscore)
         scores = np.append(scores, newscore)
-        if isconverged(scores) == True:
+        if util.isconverged(scores) == True:
             break
         iter = iter + 1
 
@@ -102,21 +104,6 @@ def estimateinitialstepsize(x, lambduh, seed=0):
 
     return (1 / L + lambduh)
 
-
-def isconverged(score):
-    isconverged = False
-
-    if len(score) >= 30:
-        mean=np.mean(score)
-        score=score-mean
-        k,p=stats.mstats.normaltest(score)
-
-        if p>=0.05:
-            #print('converged after ' + str(len(score)) + ' iterations')
-            isconverged = True
-
-    return isconverged
-
 #computeobj, computegrad, beta_init, x, y, lambduh, max_iter=1000
 #scoring function
 #initial lambdas
@@ -156,7 +143,7 @@ def crossvalidation(x, y, lambda_vals, computescore, computeobj, computegrad, fo
 
             newsubscore = computescore(x_test, y_test, foldbetas)
             subscores = np.append(subscores, newsubscore)
-            if isconverged(subscores) == True:
+            if util.isconverged(subscores) == True:
                 break
 
                 # print("lambda: " + str(lambda_vals[ki]) + ", fold: " + str(fold) + ", subscore: " + str(subscores[fold]))
@@ -209,7 +196,7 @@ def runcvfolds(lambduh,computescore, computeobj, computegrad, num_obs, x, y, fol
 
         newsubscore = computescore(x_test, y_test, foldbetas)
         subscores = np.append(subscores, newsubscore)
-        if isconverged(subscores) == True:
+        if util.isconverged(subscores) == True:
             break
 
         #print("lambda: "+ str(lambduh) + ", fold: " + str(fold) + ", meanscore: " + str(newsubscore))

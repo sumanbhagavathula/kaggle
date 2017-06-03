@@ -1,22 +1,48 @@
 import numpy as np
+import random
 import pandas as pd
+import math
 from IPython.core.display import display
 import copy
-import math
-import random
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import imshow
+from sklearn.decomposition import PCA
+from sklearn import cross_validation
 import multiprocessing
+
 import load_and_clean_data as lcd
 import linearsvm_sqhingeloss as lsvm
-import linearsvmmulticlass_sqhingeloss as lsvmmc
-from sklearn import cross_validation
 import utilityfunctions as util
+import linearsvmmulticlass_sqhingeloss as lsvmmc
 
-dirname = 'linearsvmmulticlass'
-path=util.makeresultsdir(dirname)
-seed = 0
+seed=0
+targetvariance=0.75
+
 image_features_dir = r'https://s3.amazonaws.com/data558filessuman/DataCompetitionfiles/data'
 
-train_features, train_labels, test_features, test_labels = lcd.load_image_data(image_features_dir)
+train_features, train_labels, test_features, test_labels, labelnames = lcd.loadandextractcleandata(image_features_dir, standardize=1)
+
+x_train = np.asarray(pd.DataFrame(train_features).apply(
+            lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
+
+x_test = np.asarray(pd.DataFrame(test_features).apply(
+            lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
+
+ncomponents=x_train.shape[1]
+
+#from scikitlearn
+pca = PCA(ncomponents, svd_solver='randomized', random_state=seed)
+pca.fit(x_train)
+
+cumsum_exp_var = np.cumsum(pca.explained_variance_ratio_)
+
+targetcomponents = np.where(cumsum_exp_var > targetvariance)[0][0]+1
+
+pca = PCA(targetcomponents, svd_solver='randomized', random_state=seed)
+pca.fit(x_train)
+
+train_features = pca.transform(x_train)
+test_features = pca.transform(x_test)
 
 lambduh=0.5
 
@@ -61,12 +87,6 @@ prediction_results.columns = ['Id','Prediction']
 prediction_results.to_csv(path+'/Yte.csv',header=True,index=False)
 
 print("done!!!")
-
-
-
-
-
-
 
 
 
