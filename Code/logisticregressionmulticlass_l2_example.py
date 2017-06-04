@@ -17,7 +17,7 @@ path = util.makeresultsdir(dirname)
 seed = 0
 image_features_dir = r'https://s3.amazonaws.com/data558filessuman/DataCompetitionfiles/data'
 
-train_features, train_labels, test_features, test_labels = lcd.load_image_data(image_features_dir)
+train_features, train_labels, test_features = lcd.load_image_data(image_features_dir)
 
 lambduh = 0.5
 

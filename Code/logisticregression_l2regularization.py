@@ -21,7 +21,7 @@ def computeobj(betas, x, y, eta):
     # f_logistic(betas,spam_data,spam_labels,eta)
 
     n = x.shape[0]
-    result = (-1 * np.log(1 + np.exp(y * np.dot(x, betas)))) / n + 2 * eta * (np.linalg.norm(betas) ** 2)
+    result = 1/len(y) * np.sum(np.log(1 + np.exp(-y*x.dot(betas)))) + eta * np.linalg.norm(betas)**2
     return (result)
 
 def logisticregression(beta_init, x, y, lambduh, initstepsize=1, max_iter=1000, method='fastgradientdescent'):

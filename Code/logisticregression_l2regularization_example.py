@@ -17,7 +17,7 @@ import logisticregression_l2regularization as logregl2
 
 image_features_dir = r'https://s3.amazonaws.com/data558filessuman/DataCompetitionfiles/data'
 
-train_features, train_labels, test_features, test_labels, labelnames = lcd.loadandextractcleandata(image_features_dir, standardize=1)
+train_features, train_labels, test_features, test_labels = lcd.load_image_data(image_features_dir, standardize=1)
 
 threads=multiprocessing.cpu_count()
 folds=10
@@ -26,6 +26,11 @@ dirname = 'twoclass_logisticregression_L2reg'
 path=util.makeresultsdir(dirname)
 
 x_train, x_test, y_train, y_test = cross_validation.train_test_split(train_features, train_labels, random_state=0, test_size=0.25)
+
+display(x_train.shape)
+display(y_train.shape)
+display(x_test.shape)
+display(y_test.shape)
 
 #logregl2CV_lambda, cvscores = logregl2.logisticregression_CV(x_train, y_train, folds=folds, max_iter=1000)
 logregl2CV_lambda, cvscores = logregl2.logisticregression_parallelCV(x_train, y_train, folds=folds, max_iter=1000, threads=threads)
