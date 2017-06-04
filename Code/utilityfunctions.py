@@ -76,19 +76,24 @@ def makeresultsdir(dirname):
 
     return path
 
-def isconverged(score, epsilon=.000001):
+def isconverged(score, epsilon=.000001, max_iter=1000):
     isconverged = False
 
     if len(score) >= 30:
         mean=np.mean(score)
         score=score-mean
-        k,p=stats.mstats.normaltest(score)
+        #k,p=stats.mstats.normaltest(score)
 
-        if p>=0.05:
+        #if p>=0.05:
             #print('converged after ' + str(len(score)) + ' iterations')
-            isconverged = True
+        #    isconverged = True
 
-        #if np.std(score) <= epsilon:
-        #    isconverged=True
+        if np.std(score) <= epsilon:
+            isconverged=True
+
+    if len(score) == max_iter:
+        print('forced convergence after ' + str(max_iter) + ' iterations')
+        isconverged = True
+
 
     return isconverged

@@ -52,6 +52,8 @@ util.plotcrossvalidationresults(cvscores.iloc[:, 0], cvscores.iloc[:, 1], logbas
 
 logisticregulticlassbetas = logregmc.logisticregmulticlass_l2(x=train_features, y=train_labels, lambduh=bestlambduhCV, max_iter=1000, method='fastgradientdescent', seed=0, threads=4)
 
+pd.DataFrame(logisticregulticlassbetas).to_csv(path + '/betas.csv', header=True, index=False)
+
 classes = np.unique(train_labels)
 y_pred = logregmc.logisticregmulticlass_predict(logisticregulticlassbetas, test_features, classes)
 

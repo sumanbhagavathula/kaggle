@@ -20,13 +20,11 @@ targetvariance=0.75
 
 image_features_dir = r'https://s3.amazonaws.com/data558filessuman/DataCompetitionfiles/data'
 
-train_features, train_labels, test_features, test_labels, labelnames = lcd.loadandextractcleandata(image_features_dir, standardize=1)
+train_features, train_labels, test_features, test_labels = lcd.load_image_data(image_features_dir, standardize=0)
 
-x_train = np.asarray(pd.DataFrame(train_features).apply(
-            lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
+x_train = np.asarray(pd.DataFrame(train_features).apply(lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
 
-x_test = np.asarray(pd.DataFrame(test_features).apply(
-            lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
+x_test = np.asarray(pd.DataFrame(test_features).apply(lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
 
 ncomponents=x_train.shape[1]
 
@@ -38,11 +36,19 @@ cumsum_exp_var = np.cumsum(pca.explained_variance_ratio_)
 
 targetcomponents = np.where(cumsum_exp_var > targetvariance)[0][0]+1
 
+print('No of pca components that explain ' + str(targetvariance) + ': ' + str(targetcomponents))
+
 pca = PCA(targetcomponents, svd_solver='randomized', random_state=seed)
 pca.fit(x_train)
 
 train_features = pca.transform(x_train)
 test_features = pca.transform(x_test)
+
+dirname = 'pca_linearsvmmulticlass'
+path=util.makeresultsdir(dirname)
+
+pd.DataFrame(train_features).to_csv(path+'/train_features_pca.csv',header=False,index=False)
+pd.DataFrame(test_features).to_csv(path+'/test_features_pca.csv',header=False,index=False)
 
 lambduh=0.5
 
@@ -80,7 +86,7 @@ util.plotcrossvalidationresults(cvscores.iloc[1,:],cvscores.iloc[1,:], logbase =
 linearsvmmulticlassbetas = lsvmmc.linearsvmmulticlass_sqhingeloss(x=train_features, y=train_labels, lambduh=bestlambduhCV, max_iter=1000, method='fastgradientdescent', seed=0, threads=4)
 
 classes=np.unique(train_labels)
-y_pred = lsvmmc.linearsvmmulticlass_predict(linearsvmmulticlassbetas.T, test_features, classes)
+y_pred = lsvmmc.linearsvmmulticlass_predict(linearsvmmulticlassbetas, test_features, classes)
 
 prediction_results = pd.DataFrame(np.vstack((test_labels,y_pred)).T)
 prediction_results.columns = ['Id','Prediction']

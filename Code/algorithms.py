@@ -37,6 +37,11 @@ def fastgradientdescent(computeobj, computegrad, beta_init, x, y, lambduh, max_i
     theta = beta_init
     theta_vals = beta_init
 
+    x = np.asarray(pd.DataFrame(x).apply(lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x)))
+
+    y = pd.DataFrame(y).apply(lambda x: (x - np.mean(x)) if (np.std(x) == 0) else (x - np.mean(x)) / np.std(x))
+    y = np.asarray(y.iloc[:,0])
+
     scores = []
     grad_theta = computegrad(theta, x, y, lambduh)
 

@@ -54,7 +54,7 @@ util.plotcrossvalidationresults(cvscores.iloc[1,:],cvscores.iloc[1,:], logbase =
 linearsvmmulticlassbetas = lsvmmc.linearsvmmulticlass_sqhingeloss(x=train_features, y=train_labels, lambduh=bestlambduhCV, max_iter=1000, method='fastgradientdescent', seed=0, threads=4)
 
 classes=np.unique(train_labels)
-y_pred = lsvmmc.linearsvmmulticlass_predict(linearsvmmulticlassbetas.T, test_features, classes)
+y_pred = lsvmmc.linearsvmmulticlass_predict(linearsvmmulticlassbetas, test_features, classes)
 
 prediction_results = pd.DataFrame(np.vstack((test_labels,y_pred)).T)
 prediction_results.columns = ['Id','Prediction']
