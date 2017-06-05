@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import distutils.dir_util
 from scipy import stats
+import os
+import re
 
 def plot_confusion_matrix(y_true,y_pred,labels,pathtosave = ''):
     cm_array = confusion_matrix(y_true,y_pred)
@@ -97,3 +99,28 @@ def isconverged(score, epsilon=.000001, max_iter=1000):
 
 
     return isconverged
+
+
+def list_all_files(directory, datatype='train'):
+    if datatype != 'train':
+        datatype = 'test'
+
+    list_images_start = []
+    list_images = []
+
+    if datatype == 'train':
+        print(directory)
+        directory += 'train/'
+        list_images_start = [directory + f for f in os.listdir(directory)]
+        for i in range(len(list_images_start)):
+            list_images += [list_images_start[i] + '/' + f for f in os.listdir(list_images_start[i]) if
+                            re.search('jpg|JPG', f)]
+    else:
+        directory += 'test/'
+        for root, directory, filenames in os.walk(directory):
+            for file in filenames:
+                list_images.append(os.path.join(root, file))
+
+    # print(list_images)
+
+    return list_images
